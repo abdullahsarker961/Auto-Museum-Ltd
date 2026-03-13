@@ -59,10 +59,6 @@ export default function Stock() {
               <option value="2022">2022</option>
             </select>
 
-            <div className="flex items-center gap-2">
-              <span className="font-body font-medium text-[13px] text-black">Price Range</span>
-              <input type="range" min="0" max="100" className="w-[100px] accent-primary-red" />
-            </div>
 
             <div className="w-[1px] h-[24px] bg-[#E0E0E0] mx-2"></div>
 
@@ -166,7 +162,6 @@ export default function Stock() {
                     <h3 className="font-body font-bold text-[15px] text-black tracking-[0.5px] hover:text-primary-red transition-colors">{car.name}</h3>
                   </Link>
                   <p className="font-body font-light text-[12px] text-[#888] mt-2">{car.spec}</p>
-                  <p className="font-mono text-[18px] text-primary-red mt-4 font-bold">{car.price}</p>
                   
                   <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <Link to={`/car/${car.id}`} className="flex-1 py-3 text-center border border-primary-red text-primary-red font-body font-semibold text-[11px] uppercase tracking-[1px] hover:bg-primary-red hover:text-white transition-colors">

@@ -8,12 +8,19 @@ export default function CarDetails() {
   const { id } = useParams();
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState<string>('');
 
   useEffect(() => {
     if (id) {
       fetchCar();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (car) {
+      setActiveImage(car.image_url);
+    }
+  }, [car]);
 
   async function fetchCar() {
     try {
@@ -62,14 +69,33 @@ export default function CarDetails() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Side - Images */}
           <div className="w-full lg:w-[55%] flex flex-col gap-4">
-            <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden shadow-lg">
+            <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden shadow-lg border border-[#E5E5E5]">
               <img 
-                src={car.image_url} 
+                src={activeImage || car.image_url} 
                 alt={car.name} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-all duration-500"
                 referrerPolicy="no-referrer"
               />
             </div>
+            {car.gallery && car.gallery.length > 0 && (
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
+                <div 
+                  onClick={() => setActiveImage(car.image_url)}
+                  className={`aspect-video cursor-pointer border-2 transition-all ${activeImage === car.image_url ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
+                >
+                  <img src={car.image_url} alt="Main" className="w-full h-full object-cover" />
+                </div>
+                {car.gallery.map((url, idx) => (
+                  <div 
+                    key={idx}
+                    onClick={() => setActiveImage(url)}
+                    className={`aspect-video cursor-pointer border-2 transition-all ${activeImage === url ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
+                  >
+                    <img src={url} alt={`Angle ${idx}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right Side - Details */}
@@ -81,8 +107,8 @@ export default function CarDetails() {
             <div className="flex flex-col items-center gap-4 mb-8">
               <div className="flex items-center gap-2 text-[15px]">
                 <span className="text-[#666]">Call Us -</span>
-                <a href="tel:+8801718388292" className="text-[#0066cc] hover:underline flex items-center gap-1">
-                  <Phone size={14} /> +8801718-388292
+                <a href={`tel:${car.contact_number || '+8801718388292'}`} className="text-[#0066cc] hover:underline flex items-center gap-1 font-bold">
+                  <Phone size={14} /> {car.contact_number || '+8801718-388292'}
                 </a>
               </div>
               <div className="w-full max-w-[300px] h-[1px] bg-[#E5E5E5]"></div>
@@ -92,9 +118,6 @@ export default function CarDetails() {
               <div className="w-full max-w-[300px] h-[1px] bg-[#E5E5E5]"></div>
               <div className="text-[16px] text-[#333] font-bold uppercase tracking-[1px]">
                 {car.year} {car.name}
-              </div>
-              <div className="text-[18px] text-primary-red font-mono font-bold mt-2">
-                {car.price}
               </div>
             </div>
 

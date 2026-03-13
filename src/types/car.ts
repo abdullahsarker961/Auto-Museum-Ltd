@@ -14,5 +14,7 @@ export interface Car {
   fuel_type?: string;
   transmission?: string;
   description?: string;
+  gallery: string[];
+  contact_number?: string;
   created_at: string;
 }

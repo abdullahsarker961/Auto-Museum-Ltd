@@ -267,7 +267,6 @@ export default function Home() {
                   <div className="p-5 pb-6 flex flex-col flex-grow">
                     <h3 className="font-body font-bold text-[16px] text-white tracking-[0.5px]">{car.name}</h3>
                     <p className="font-body font-light text-[12px] text-[rgba(255,255,255,0.50)] mt-1">{car.spec}</p>
-                    <p className="font-mono text-[14px] text-primary-red mt-4 font-bold">{car.price}</p>
                   </div>
                   <div className="w-full py-4 text-center font-body font-semibold text-[11px] text-[rgba(255,255,255,0.30)] uppercase tracking-[2px] transition-colors group-hover:text-primary-red relative overflow-hidden">
                     <span className="relative z-10">View Details &rarr;</span>

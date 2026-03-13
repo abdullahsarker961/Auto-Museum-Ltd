@@ -27,6 +27,8 @@ export default function CarForm() {
     mileage: '',
     fuel_type: '',
     transmission: '',
+    gallery: [],
+    contact_number: '+8801718-388292',
   });
 
   useEffect(() => {
@@ -83,6 +85,52 @@ export default function CarForm() {
       setUploading(false);
     }
   }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setUploading(true);
+      const newUrls: string[] = [];
+
+      for (const fileObj of Array.from(files)) {
+        const file = fileObj as File;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `car-gallery/${fileName}`;
+
+        const { error } = await supabase.storage
+          .from('automuseum')
+          .upload(filePath, file);
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('automuseum')
+          .getPublicUrl(filePath);
+        
+        newUrls.push(publicUrl);
+      }
+
+      setFormData(prev => ({ 
+        ...prev, 
+        gallery: [...(prev.gallery || []), ...newUrls] 
+      }));
+    } catch (error: any) {
+      console.error('Error uploading gallery images:', error);
+      alert('Error uploading images: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: prev.gallery?.filter((_, i) => i !== index)
+    }));
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -200,6 +248,66 @@ export default function CarForm() {
             </div>
           </div>
 
+          {/* Gallery Section */}
+          <div className="bg-[#111] border border-[#222] p-8">
+            <h2 className="font-display text-[16px] uppercase tracking-[2px] mb-6 flex items-center gap-3">
+              <span className="w-1.5 h-1.5 bg-primary-red rounded-full"></span>
+              Additional Images (Gallery)
+            </h2>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
+              {formData.gallery?.map((url, idx) => (
+                <div key={idx} className="relative aspect-video bg-[#181818] border border-[#222] group overflow-hidden">
+                  <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                  <button 
+                    type="button"
+                    onClick={() => removeGalleryImage(idx)}
+                    className="absolute top-2 right-2 p-1.5 bg-primary-red text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+              <div className="relative aspect-video border-2 border-dashed border-[#333] hover:border-primary-red/50 transition-colors flex flex-col items-center justify-center cursor-pointer">
+                <Upload size={20} className="text-[#444]" />
+                <span className="text-[10px] text-muted-text uppercase mt-2">Add Images</span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleGalleryUpload} 
+                  className="absolute inset-0 opacity-0 cursor-pointer" 
+                  disabled={uploading}
+                />
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Add URL Manually</label>
+              <div className="flex gap-2">
+                <input 
+                  type="url" 
+                  id="gallery-url"
+                  className="bg-[#181818] border border-[#333] p-4 flex-grow text-white font-body text-[14px] outline-none focus:border-primary-red"
+                  placeholder="https://example.com/other-angle.jpg"
+                />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const input = document.getElementById('gallery-url') as HTMLInputElement;
+                    if (input.value) {
+                      setFormData(prev => ({ ...prev, gallery: [...(prev.gallery || []), input.value] }));
+                      input.value = '';
+                    }
+                  }}
+                  className="bg-[#222] px-6 text-[12px] uppercase tracking-[1px] font-bold hover:bg-primary-red transition-colors"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Basic Info */}
           <div className="bg-[#111] border border-[#222] p-8">
             <h2 className="font-display text-[16px] uppercase tracking-[2px] mb-6 flex items-center gap-3">
@@ -217,11 +325,19 @@ export default function CarForm() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Price Tag</label>
+                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Internal Price (Hidden from site)</label>
                 <input 
-                  type="text" name="price" value={formData.price} onChange={handleChange} required
+                  type="text" name="price" value={formData.price} onChange={handleChange}
                   className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
-                  placeholder="e.g. Call for Price / ৳2,50,00,000"
+                  placeholder="e.g. ৳2,50,00,000"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Contact Number for this Vehicle</label>
+                <input 
+                  type="text" name="contact_number" value={formData.contact_number} onChange={handleChange}
+                  className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
+                  placeholder="+8801718-388292"
                 />
               </div>
               <div className="flex flex-col gap-2">
