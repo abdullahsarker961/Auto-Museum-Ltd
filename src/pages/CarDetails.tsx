@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
-import { Facebook, Instagram, Phone, ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Facebook, Instagram, Phone, ArrowLeft, ChevronLeft, ChevronRight, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Car } from "../types/car";
 
@@ -9,6 +9,22 @@ export default function CarDetails() {
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState<string>('');
+  const [showLightbox, setShowLightbox] = useState(false);
+
+  const allImages = car ? [car.image_url, ...(car.gallery || [])] : [];
+  const currentIndex = allImages.indexOf(activeImage);
+
+  const nextImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const nextIdx = (currentIndex + 1) % allImages.length;
+    setActiveImage(allImages[nextIdx]);
+  };
+
+  const prevImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const prevIdx = (currentIndex - 1 + allImages.length) % allImages.length;
+    setActiveImage(allImages[prevIdx]);
+  };
 
   useEffect(() => {
     if (id) {
@@ -69,13 +85,31 @@ export default function CarDetails() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Side - Images */}
           <div className="w-full lg:w-[55%] flex flex-col gap-4">
-            <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden shadow-lg border border-[#E5E5E5]">
+            <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden shadow-lg border border-[#E5E5E5] relative group">
               <img 
                 src={activeImage || car.image_url} 
                 alt={car.name} 
-                className="w-full h-full object-cover transition-all duration-500"
+                className="w-full h-full object-cover transition-all duration-500 cursor-zoom-in"
                 referrerPolicy="no-referrer"
+                onClick={() => setShowLightbox(true)}
               />
+              
+              {allImages.length > 1 && (
+                <>
+                  <button 
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white text-black rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button 
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white text-black rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
             </div>
             {car.gallery && car.gallery.length > 0 && (
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
@@ -91,7 +125,7 @@ export default function CarDetails() {
                     onClick={() => setActiveImage(url)}
                     className={`aspect-video cursor-pointer border-2 transition-all ${activeImage === url ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
                   >
-                    <img src={url} alt={`Angle ${idx}`} className="w-full h-full object-cover" />
+                    <img src={url} alt={`Angle ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                 ))}
               </div>
@@ -176,6 +210,50 @@ export default function CarDetails() {
           </a>
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {showLightbox && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-10"
+          onClick={() => setShowLightbox(false)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+            onClick={() => setShowLightbox(false)}
+          >
+            <X size={40} />
+          </button>
+
+          {allImages.length > 1 && (
+            <>
+              <button 
+                onClick={prevImage}
+                className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+              >
+                <ChevronLeft size={48} />
+              </button>
+              <button 
+                onClick={nextImage}
+                className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+              >
+                <ChevronRight size={48} />
+              </button>
+            </>
+          )}
+
+          <img 
+            src={activeImage} 
+            alt="Fullscreen View" 
+            className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-300"
+            referrerPolicy="no-referrer"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/10 rounded-full text-white/50 text-[12px] font-mono tracking-[2px]">
+            {currentIndex + 1} / {allImages.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
