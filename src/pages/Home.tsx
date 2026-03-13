@@ -12,24 +12,28 @@ export default function Home() {
 
   useEffect(() => {
     fetchFeaturedCars();
+  }, []);
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100", "translate-y-0");
-            entry.target.classList.remove("opacity-0", "translate-y-10");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+  useEffect(() => {
+    if (!loading && featuredCars.length > 0) {
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("opacity-100", "translate-y-0");
+              entry.target.classList.remove("opacity-0", "translate-y-10");
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
 
-    const elements = document.querySelectorAll(".animate-on-scroll");
-    elements.forEach((el) => observerRef.current?.observe(el));
+      const elements = document.querySelectorAll(".animate-on-scroll");
+      elements.forEach((el) => observerRef.current?.observe(el));
+    }
 
     return () => observerRef.current?.disconnect();
-  }, []);
+  }, [featuredCars, loading]);
 
   async function fetchFeaturedCars() {
     try {
@@ -276,7 +280,7 @@ export default function Home() {
 
           {/* CTA Row */}
           <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-[#222222] pt-8 animate-on-scroll opacity-0 translate-y-10 transition-all duration-700">
-            <span className="font-body font-normal text-[14px] text-[rgba(255,255,255,0.45)]">Showing 4 of 50+ vehicles</span>
+            <span className="font-body font-normal text-[14px] text-[rgba(255,255,255,0.45)]">Showing {featuredCars.length} of our featured collection</span>
             <Link
               to="/stock"
               className="bg-primary-red hover:bg-deep-red transition-colors px-[40px] py-[16px] font-body font-semibold text-[12px] text-white tracking-[2.5px] uppercase flex items-center justify-center"
