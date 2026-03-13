@@ -263,7 +263,7 @@ export default function CarForm() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
               {formData.gallery?.map((url, idx) => (
                 <div key={idx} className="relative aspect-video bg-[#181818] border border-[#222] group overflow-hidden">
-                  <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                  <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   <button 
                     type="button"
                     onClick={() => removeGalleryImage(idx)}
