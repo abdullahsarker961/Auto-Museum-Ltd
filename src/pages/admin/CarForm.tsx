@@ -151,7 +151,7 @@ export default function CarForm() {
               Vehicle Media
             </h2>
             
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-[#333] hover:border-primary-red/50 transition-colors p-10 relative overflow-hidden group">
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-[#333] hover:border-primary-red/50 transition-colors p-10 relative overflow-hidden group mb-6">
               {formData.image_url ? (
                 <>
                   <img 
@@ -184,6 +184,19 @@ export default function CarForm() {
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" disabled={uploading} />
                 </div>
               )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Or Paste Image URL</label>
+              <input 
+                type="url" 
+                name="image_url" 
+                value={formData.image_url} 
+                onChange={handleChange}
+                className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
+                placeholder="https://example.com/car-image.jpg"
+              />
+              <p className="text-[10px] text-[#666] mt-1 italic">Note: Manual URLs are useful for images hosted on external servers.</p>
             </div>
           </div>
 
