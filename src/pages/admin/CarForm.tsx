@@ -141,16 +141,21 @@ export default function CarForm() {
 
     try {
       setLoading(true);
+      
+      // Sanitization: Filter out empty strings from gallery
+      const sanitizedGallery = formData.gallery ? formData.gallery.filter(url => url && url.trim() !== '') : [];
+      const dataToSave = { ...formData, gallery: sanitizedGallery };
+
       if (isEdit) {
         const { error } = await supabase
           .from('cars')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('cars')
-          .insert([formData]);
+          .insert([dataToSave]);
         if (error) throw error;
       }
       navigate('/admin/dashboard');
@@ -295,8 +300,9 @@ export default function CarForm() {
                   type="button"
                   onClick={() => {
                     const input = document.getElementById('gallery-url') as HTMLInputElement;
-                    if (input.value) {
-                      setFormData(prev => ({ ...prev, gallery: [...(prev.gallery || []), input.value] }));
+                    const url = input.value.trim();
+                    if (url) {
+                      setFormData(prev => ({ ...prev, gallery: [...(prev.gallery || []), url] }));
                       input.value = '';
                     }
                   }}
