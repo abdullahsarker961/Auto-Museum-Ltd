@@ -59,10 +59,11 @@ export default function Home() {
       <section className="relative w-full h-[100vh] min-h-[700px] overflow-hidden bg-pure-black">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://i.postimg.cc/gkd3xRZ7/Gemini-Generated-Image-bszgpbbszgpbbszg.png"
+            src="https://jfduxnsphhorsrnwkbvn.supabase.co/storage/v1/object/public/automuseum/assets/hero-car.png"
             alt="Hero Car"
             className="w-full h-full object-cover object-center"
             referrerPolicy="no-referrer"
+            fetchpriority="high"
           />
         </div>
         
