@@ -23,10 +23,7 @@ export default function CarForm() {
     is_featured: false,
     is_latest: false,
     description: '',
-    engine: '',
-    mileage: '',
-    fuel_type: '',
-    transmission: '',
+    features: [],
     gallery: [],
     contact_number: '+8801718-388292',
   });
@@ -129,6 +126,25 @@ export default function CarForm() {
     setFormData(prev => ({
       ...prev,
       gallery: prev.gallery?.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addFeature = () => {
+    const input = document.getElementById('feature-input') as HTMLInputElement;
+    const value = input.value.trim();
+    if (value) {
+      setFormData(prev => ({
+        ...prev,
+        features: [...(prev.features || []), value]
+      }));
+      input.value = '';
+    }
+  };
+
+  const removeFeature = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      features: prev.features?.filter((_, i) => i !== index)
     }));
   };
 
@@ -370,16 +386,16 @@ export default function CarForm() {
             </div>
           </div>
 
-          {/* Technical Specs */}
+          {/* Technical Specs & Description */}
           <div className="bg-[#111] border border-[#222] p-8">
             <h2 className="font-display text-[16px] uppercase tracking-[2px] mb-6 flex items-center gap-3">
               <span className="w-1.5 h-1.5 bg-primary-red rounded-full"></span>
-              Technical Specifications
+              Vehicle Details & Description
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Core Spec/Performance</label>
+                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Core Spec/Label (e.g. 5.0L V8)</label>
                 <input 
                   type="text" name="spec" value={formData.spec} onChange={handleChange}
                   className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
@@ -387,27 +403,11 @@ export default function CarForm() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Engine Details</label>
+                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Fuel Type</label>
                 <input 
-                  type="text" name="engine" value={formData.engine} onChange={handleChange}
+                  type="text" name="fuel_type" value={formData.fuel_type} onChange={handleChange}
                   className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
-                  placeholder="V8 Twin-Turbo"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Mileage</label>
-                <input 
-                  type="text" name="mileage" value={formData.mileage} onChange={handleChange}
-                  className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
-                  placeholder="5,000 KM"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-body text-[10px] text-muted-text uppercase tracking-[2px]">Transmission</label>
-                <input 
-                  type="text" name="transmission" value={formData.transmission} onChange={handleChange}
-                  className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red"
-                  placeholder="9G-TRONIC"
+                  placeholder="e.g. Petrol, Octane"
                 />
               </div>
             </div>
@@ -419,6 +419,49 @@ export default function CarForm() {
                 className="bg-[#181818] border border-[#333] p-4 text-white font-body text-[14px] outline-none focus:border-primary-red resize-none"
                 placeholder="Describe the vehicle's features and condition..."
               />
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="bg-[#111] border border-[#222] p-8">
+            <h2 className="font-display text-[16px] uppercase tracking-[2px] mb-6 flex items-center gap-3">
+              <span className="w-1.5 h-1.5 bg-primary-red rounded-full"></span>
+              Key Features (Points)
+            </h2>
+
+            <div className="flex mb-6 gap-2">
+              <input 
+                type="text" 
+                id="feature-input"
+                className="bg-[#181818] border border-[#333] p-4 flex-grow text-white font-body text-[14px] outline-none focus:border-primary-red"
+                placeholder="e.g. 360 Degree Camera"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+              />
+              <button 
+                type="button"
+                onClick={addFeature}
+                className="bg-[#222] px-6 text-[12px] uppercase tracking-[1px] font-bold hover:bg-primary-red transition-colors"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {formData.features?.map((feature, idx) => (
+                <div key={idx} className="bg-[#181818] border border-[#222] p-3 flex items-center justify-between group">
+                  <div className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 bg-primary-red rounded-full"></span>
+                    <span className="text-[13px] font-body text-white">{feature}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => removeFeature(idx)}
+                    className="text-muted-text hover:text-primary-red opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 

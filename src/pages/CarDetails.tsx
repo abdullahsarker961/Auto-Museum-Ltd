@@ -133,62 +133,51 @@ export default function CarDetails() {
           </div>
 
           {/* Right Side - Details */}
-          <div className="w-full lg:w-[45%] flex flex-col pt-4">
-            <h1 className="font-serif text-[32px] md:text-[40px] text-[#333] leading-[1.2] text-center mb-6">
-              {car.name}
+          <div className="w-full lg:w-[45%] flex flex-col pt-0 lg:pl-4 text-left">
+            <h1 className="font-serif text-[32px] md:text-[36px] text-[#111] leading-[1.2] mb-4">
+              {car.name}, {car.year}.
             </h1>
             
-            <div className="flex flex-col items-center gap-4 mb-8">
-              <div className="flex items-center gap-2 text-[15px]">
-                <span className="text-[#666]">Call Us -</span>
+            <div className="flex flex-col items-start gap-4 mb-6">
+              <div className="flex items-center gap-2 text-[14px] text-[#333]">
+                <span className="font-body">Call Us -</span>
                 <a href={`tel:${car.contact_number || '+8801718388292'}`} className="text-[#0066cc] hover:underline flex items-center gap-1 font-bold">
-                  <Phone size={14} /> {car.contact_number || '+8801718-388292'}
+                  {car.contact_number || '+8801718-388292'}
                 </a>
               </div>
-              <div className="w-full max-w-[300px] h-[1px] bg-[#E5E5E5]"></div>
-              <div className="text-[14px] text-[#888]">
+              
+              <div className="w-full h-[1px] bg-[#E5E5E5]"></div>
+              
+              <div className="text-[12px] text-[#888] font-body uppercase tracking-[1px]">
                 BY - AUTO MUSEUM LTD.
               </div>
-              <div className="w-full max-w-[300px] h-[1px] bg-[#E5E5E5]"></div>
-              <div className="text-[16px] text-[#333] font-bold uppercase tracking-[1px]">
+              
+              <div className="text-[16px] text-[#111] font-body font-bold">
                 {car.year} {car.name}
               </div>
             </div>
 
-            <div className="bg-white p-8 border border-[#E5E5E5] shadow-sm">
-              <h3 className="font-bold text-[16px] text-[#333] mb-4 uppercase tracking-[1px] border-b border-[#F0F0F0] pb-2">Vehicle Specifications</h3>
-              <div className="grid grid-cols-1 gap-4 mb-8">
-                <div className="flex justify-between items-center bg-[#F9F9F9] p-3 rounded">
-                  <span className="text-[13px] text-[#666] font-medium uppercase">Performance/Spec</span>
-                  <span className="text-[13px] text-[#333] font-semibold">{car.spec}</span>
-                </div>
-                {car.engine && (
-                  <div className="flex justify-between items-center bg-white p-3 border-b border-[#F0F0F0]">
-                    <span className="text-[13px] text-[#666] font-medium uppercase">Engine</span>
-                    <span className="text-[13px] text-[#333] font-semibold">{car.engine}</span>
-                  </div>
-                )}
-                {car.mileage && (
-                  <div className="flex justify-between items-center bg-[#F9F9F9] p-3 rounded">
-                    <span className="text-[13px] text-[#666] font-medium uppercase">Mileage</span>
-                    <span className="text-[13px] text-[#333] font-semibold">{car.mileage}</span>
-                  </div>
-                )}
-                {car.transmission && (
-                  <div className="flex justify-between items-center bg-white p-3 border-b border-[#F0F0F0]">
-                    <span className="text-[13px] text-[#666] font-medium uppercase">Transmission</span>
-                    <span className="text-[13px] text-[#333] font-semibold">{car.transmission}</span>
-                  </div>
-                )}
+            <div className="flex flex-col gap-6">
+              <div className="text-[15px] text-[#333] leading-[1.8] font-body">
+                {car.description || `Experience the pinnacle of luxury with the ${car.year} ${car.name}. This exceptional vehicle combines state-of-the-art technology with unparalleled comfort and performance.`}
               </div>
 
-              <h3 className="font-bold text-[16px] text-[#333] mb-4 uppercase tracking-[1px] border-b border-[#F0F0F0] pb-2">Description</h3>
-              <p className="text-[15px] text-[#555] leading-[1.8]">
-                {car.description || "The efficient 3.0-liter turbocharged engine provides exceptional performance and smooth power delivery."}
-              </p>
+              {car.features && car.features.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <h3 className="font-bold text-[15px] text-[#111] font-body">Features:</h3>
+                  <ul className="flex flex-col gap-2">
+                    {car.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-[14px] text-[#444] font-body leading-[1.5]">
+                        <span className="w-1.5 h-1.5 bg-[#444] rounded-full mt-1.5 flex-shrink-0"></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
-            <Link to="/contact" className="mt-8 bg-primary-red text-white py-4 text-center font-body font-bold text-[13px] uppercase tracking-[2px] hover:bg-deep-red transition-all shadow-lg hover:shadow-xl">
+            <Link to="/contact" className="mt-10 bg-primary-red text-white py-4 px-8 text-center font-body font-bold text-[13px] uppercase tracking-[2px] hover:bg-deep-red transition-all shadow-lg hover:shadow-xl self-start lg:self-stretch">
               ENQUIRE ABOUT THIS VEHICLE
             </Link>
           </div>
