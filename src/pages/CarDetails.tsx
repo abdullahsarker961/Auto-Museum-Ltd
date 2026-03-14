@@ -8,22 +8,24 @@ export default function CarDetails() {
   const { id } = useParams();
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState<string>('');
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
 
-  const allImages = car ? [car.image_url, ...(car.gallery || [])] : [];
-  const currentIndex = allImages.indexOf(activeImage);
+  // Filter out any empty strings and ensure uniqueness to avoid navigation bugs
+  const allImages = car 
+    ? Array.from(new Set([car.image_url, ...(car.gallery || [])])).filter(url => url && url.trim() !== "")
+    : [];
 
   const nextImage = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const nextIdx = (currentIndex + 1) % allImages.length;
-    setActiveImage(allImages[nextIdx]);
+    if (allImages.length === 0) return;
+    setActiveImageIndex((prev) => (prev + 1) % allImages.length);
   };
 
   const prevImage = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const prevIdx = (currentIndex - 1 + allImages.length) % allImages.length;
-    setActiveImage(allImages[prevIdx]);
+    if (allImages.length === 0) return;
+    setActiveImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function CarDetails() {
 
   useEffect(() => {
     if (car) {
-      setActiveImage(car.image_url);
+      setActiveImageIndex(0);
     }
   }, [car]);
 
@@ -87,7 +89,7 @@ export default function CarDetails() {
           <div className="w-full lg:w-[55%] flex flex-col gap-4">
             <div className="w-full aspect-[4/3] bg-gray-200 overflow-hidden shadow-lg border border-[#E5E5E5] relative group">
               <img 
-                src={activeImage || car.image_url} 
+                src={allImages[activeImageIndex] || car.image_url} 
                 alt={car.name} 
                 className="w-full h-full object-cover transition-all duration-500 cursor-zoom-in"
                 referrerPolicy="no-referrer"
@@ -114,16 +116,16 @@ export default function CarDetails() {
             {car.gallery && car.gallery.length > 0 && (
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
                 <div 
-                  onClick={() => setActiveImage(car.image_url)}
-                  className={`aspect-video cursor-pointer border-2 transition-all ${activeImage === car.image_url ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
+                  onClick={() => setActiveImageIndex(0)}
+                  className={`aspect-video cursor-pointer border-2 transition-all ${activeImageIndex === 0 ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
                 >
                   <img src={car.image_url} alt="Main" className="w-full h-full object-cover" />
                 </div>
-                {car.gallery.map((url, idx) => (
+                {allImages.slice(1).map((url, idx) => (
                   <div 
                     key={idx}
-                    onClick={() => setActiveImage(url)}
-                    className={`aspect-video cursor-pointer border-2 transition-all ${activeImage === url ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
+                    onClick={() => setActiveImageIndex(idx + 1)}
+                    className={`aspect-video cursor-pointer border-2 transition-all ${activeImageIndex === idx + 1 ? 'border-primary-red' : 'border-transparent hover:border-[#CCC]'}`}
                   >
                     <img src={url} alt={`Angle ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
@@ -231,7 +233,7 @@ export default function CarDetails() {
           )}
 
           <img 
-            src={activeImage} 
+            src={allImages[activeImageIndex]} 
             alt="Fullscreen View" 
             className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-300"
             referrerPolicy="no-referrer"
@@ -239,7 +241,7 @@ export default function CarDetails() {
           />
 
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/10 rounded-full text-white/50 text-[12px] font-mono tracking-[2px]">
-            {currentIndex + 1} / {allImages.length}
+            {activeImageIndex + 1} / {allImages.length}
           </div>
         </div>
       )}
